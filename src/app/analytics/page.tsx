@@ -18,7 +18,7 @@ import {
 } from "recharts";
 import {
   Fuel,
-  DollarSign,
+  IndianRupee,
   TrendingUp,
   Percent,
   Download,
@@ -87,7 +87,7 @@ export default function AnalyticsPage() {
         <AnalyticsCard
           title="Operational Cost"
           value={`₹${data.operationalCost.toLocaleString()}`}
-          icon={<DollarSign className="h-5 w-5" />}
+          icon={<IndianRupee className="h-5 w-5" />}
           color="text-orange-500"
           subtitle={`₹${data.totalFuelCost.toFixed(0)} fuel + ₹${data.totalMaintenanceCost.toFixed(0)} maint`}
         />

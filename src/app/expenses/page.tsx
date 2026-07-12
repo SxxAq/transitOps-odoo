@@ -26,7 +26,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { expenseSchema, type ExpenseFormData } from "@/lib/validations";
-import { Receipt, Trash2, Plus, DollarSign, Wrench, CreditCard } from "lucide-react";
+import { Receipt, Trash2, Plus, IndianRupee, Wrench, CreditCard } from "lucide-react";
 
 const expenseTypeLabels: Record<string, string> = {
   toll: "Toll",
@@ -169,7 +169,7 @@ export default function ExpensesPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-primary" />
+              <IndianRupee className="h-5 w-5 text-primary" />
               <span className="text-2xl font-bold">
                 ₹{totalExpenses.toLocaleString()}
               </span>

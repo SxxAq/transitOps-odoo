@@ -26,7 +26,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { fuelLogSchema, type FuelLogFormData } from "@/lib/validations";
-import { Fuel, Trash2, Plus, DollarSign, Droplets } from "lucide-react";
+import { Fuel, Trash2, Plus, IndianRupee, Droplets } from "lucide-react";
 
 export default function FuelPage() {
   const [fuelLogs, setFuelLogs] = useState<FuelLog[]>([]);
@@ -138,7 +138,7 @@ export default function FuelPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-primary" />
+              <IndianRupee className="h-5 w-5 text-primary" />
               <span className="text-2xl font-bold">
                 ₹{totalFuelCost.toLocaleString()}
               </span>
