@@ -1,45 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getDashboardStats } from "@/services/dashboard.service";
+import {
+  getDashboardStats,
+  type DashboardStats,
+  type ChartData,
+} from "@/services/dashboard.service";
+import {
+  VehicleStatusChart,
+  TripStatusChart,
+  FuelCostChart,
+  OperationalCostChart,
+} from "@/components/charts/charts";
 import {
   Truck,
   MapPin,
   Users,
-  BarChart3,
   AlertTriangle,
   CheckCircle2,
   Clock,
-  XCircle,
   Wrench,
   TrendingUp,
 } from "lucide-react";
 
-interface DashboardStats {
-  totalVehicles: number;
-  activeVehicles: number;
-  availableVehicles: number;
-  vehiclesOnTrip: number;
-  vehiclesInShop: number;
-  vehiclesRetired: number;
-  totalDrivers: number;
-  driversOnDuty: number;
-  driversAvailable: number;
-  activeTrips: number;
-  pendingTrips: number;
-  completedTrips: number;
-  cancelledTrips: number;
-  totalTrips: number;
-  fleetUtilization: number;
-}
-
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [charts, setCharts] = useState<ChartData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getDashboardStats()
-      .then(setStats)
+      .then((result) => {
+        setStats(result.stats);
+        setCharts(result.charts);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -130,39 +124,25 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Trip Summary */}
+      {/* Charts */}
+      {charts && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <VehicleStatusChart data={charts.vehicleStatus} />
+          <TripStatusChart data={charts.tripStatus} />
+          <FuelCostChart data={charts.monthlyFuelCost} />
+          <OperationalCostChart data={charts.monthlyOperationalCost} />
+        </div>
+      )}
+
+      {/* Summary Panels */}
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <h3 className="text-sm font-medium text-muted-foreground">Trip Summary</h3>
           <div className="mt-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-blue-500" />
-                Active (Dispatched)
-              </span>
-              <span className="font-semibold">{stats.activeTrips}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-yellow-500" />
-                Pending (Draft)
-              </span>
-              <span className="font-semibold">{stats.pendingTrips}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-green-500" />
-                Completed
-              </span>
-              <span className="font-semibold">{stats.completedTrips}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-red-500" />
-                Cancelled
-              </span>
-              <span className="font-semibold">{stats.cancelledTrips}</span>
-            </div>
+            <SummaryRow label="Active (Dispatched)" value={stats.activeTrips} dot="bg-blue-500" />
+            <SummaryRow label="Pending (Draft)" value={stats.pendingTrips} dot="bg-yellow-500" />
+            <SummaryRow label="Completed" value={stats.completedTrips} dot="bg-green-500" />
+            <SummaryRow label="Cancelled" value={stats.cancelledTrips} dot="bg-red-500" />
             <div className="border-t pt-3 flex items-center justify-between">
               <span className="text-sm font-medium">Total Trips</span>
               <span className="font-bold text-lg">{stats.totalTrips}</span>
@@ -173,20 +153,8 @@ export default function DashboardPage() {
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <h3 className="text-sm font-medium text-muted-foreground">Driver Status</h3>
           <div className="mt-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-blue-500" />
-                On Trip
-              </span>
-              <span className="font-semibold">{stats.driversOnDuty}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-green-500" />
-                Available
-              </span>
-              <span className="font-semibold">{stats.driversAvailable}</span>
-            </div>
+            <SummaryRow label="On Trip" value={stats.driversOnDuty} dot="bg-blue-500" />
+            <SummaryRow label="Available" value={stats.driversAvailable} dot="bg-green-500" />
             <div className="border-t pt-3 flex items-center justify-between">
               <span className="text-sm font-medium">Total Drivers</span>
               <span className="font-bold text-lg">{stats.totalDrivers}</span>
@@ -215,7 +183,7 @@ function KPICard({
     <div className="rounded-xl border bg-card p-6 shadow-sm">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-muted-foreground">{title}</p>
-        <div className={`${color}`}>{icon}</div>
+        <div className={color}>{icon}</div>
       </div>
       <p className="mt-2 text-3xl font-bold">{value}</p>
       {subtitle && (
@@ -243,6 +211,26 @@ function StatusCard({
         <span className="text-sm font-medium text-muted-foreground">{title}</span>
       </div>
       <p className="mt-2 text-2xl font-bold">{value}</p>
+    </div>
+  );
+}
+
+function SummaryRow({
+  label,
+  value,
+  dot,
+}: {
+  label: string;
+  value: number;
+  dot: string;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-sm flex items-center gap-2">
+        <span className={`h-2 w-2 rounded-full ${dot}`} />
+        {label}
+      </span>
+      <span className="font-semibold">{value}</span>
     </div>
   );
 }
