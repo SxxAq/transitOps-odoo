@@ -1,5 +1,17 @@
 import type { Vehicle, Driver } from "@/types";
 
+export function isRegistrationUnique(
+  registrationNumber: string,
+  vehicles: Vehicle[],
+  excludeId?: string
+): boolean {
+  return !vehicles.some(
+    (v) =>
+      v.registration_number.toLowerCase() ===
+        registrationNumber.toLowerCase() && v.id !== excludeId
+  );
+}
+
 export function canDispatchVehicle(vehicle: Vehicle): boolean {
   return vehicle.status === "available";
 }
