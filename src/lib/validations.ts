@@ -8,6 +8,7 @@ export const vehicleSchema = z.object({
   odometer: z.number().min(0, "Odometer cannot be negative"),
   acquisition_cost: z.number().min(0, "Cost cannot be negative"),
   status: z.enum(["available", "on_trip", "in_shop", "retired"]),
+  region: z.string().optional().nullable(),
 });
 
 export const driverSchema = z.object({

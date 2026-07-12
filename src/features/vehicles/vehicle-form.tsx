@@ -42,6 +42,8 @@ const vehicleStatuses = [
   { value: "retired", label: "Retired" },
 ];
 
+const vehicleRegions = ["North", "South", "East", "West", "Central"];
+
 export function VehicleForm({
   initialData,
   existingVehicles,
@@ -66,6 +68,7 @@ export function VehicleForm({
           odometer: initialData.odometer,
           acquisition_cost: initialData.acquisition_cost,
           status: initialData.status,
+          region: initialData.region ?? "",
         }
       : {
           registration_number: "",
@@ -75,11 +78,13 @@ export function VehicleForm({
           odometer: 0,
           acquisition_cost: 0,
           status: "available",
+          region: "",
         },
   });
 
   const selectedType = watch("type");
   const selectedStatus = watch("status");
+  const selectedRegion = watch("region");
   const regNumber = watch("registration_number");
 
   const regError =
@@ -208,6 +213,31 @@ export function VehicleForm({
             <p className="text-xs text-destructive">
               {errors.acquisition_cost.message}
             </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label>Region</Label>
+          <Select
+            value={selectedRegion || ""}
+            onValueChange={(value) => {
+              setValue("region", value || null);
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select region" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">None (No Region)</SelectItem>
+              {vehicleRegions.map((r) => (
+                <SelectItem key={r} value={r}>
+                  {r}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.region && (
+            <p className="text-xs text-destructive">{errors.region.message}</p>
           )}
         </div>
       </div>

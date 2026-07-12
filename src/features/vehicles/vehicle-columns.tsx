@@ -31,6 +31,11 @@ export function getVehicleColumns({
       header: "Type",
     },
     {
+      accessorKey: "region",
+      header: "Region",
+      cell: ({ row }) => <span>{row.original.region ?? "—"}</span>,
+    },
+    {
       accessorKey: "capacity",
       header: "Capacity",
       cell: ({ row }) => <span>{row.original.capacity} kg</span>,

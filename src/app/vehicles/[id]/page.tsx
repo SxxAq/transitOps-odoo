@@ -113,6 +113,11 @@ export default function VehicleDetailPage() {
             </div>
             <Separator />
             <div className="flex justify-between">
+              <span className="text-muted-foreground">Region</span>
+              <span className="font-medium">{vehicle.region ?? "—"}</span>
+            </div>
+            <Separator />
+            <div className="flex justify-between">
               <span className="text-muted-foreground">Status</span>
               <VehicleStatusBadge status={vehicle.status} />
             </div>

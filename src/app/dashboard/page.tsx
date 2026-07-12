@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { cn } from "@/lib/utils";
 import {
   getDashboardStats,
+  computeStats,
+  computeChartData,
   type DashboardStats,
   type ChartData,
+  type DashboardData,
 } from "@/services/dashboard.service";
 import {
   VehicleStatusChart,
@@ -22,21 +26,82 @@ import {
   Wrench,
   TrendingUp,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [charts, setCharts] = useState<ChartData | null>(null);
+  const [rawData, setRawData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Filters state
+  const [vehicleTypeFilter, setVehicleTypeFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [regionFilter, setRegionFilter] = useState<string>("all");
 
   useEffect(() => {
     getDashboardStats()
       .then((result) => {
-        setStats(result.stats);
-        setCharts(result.charts);
+        setRawData(result.raw);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const filteredData = useMemo(() => {
+    if (!rawData) return null;
+
+    const filteredVehicles = rawData.vehicles.filter((v) => {
+      const matchesType = vehicleTypeFilter === "all" || v.type === vehicleTypeFilter;
+      const matchesStatus = statusFilter === "all" || v.status === statusFilter;
+      const matchesRegion =
+        regionFilter === "all" ||
+        v.region === regionFilter ||
+        (regionFilter === "none" && !v.region);
+      return matchesType && matchesStatus && matchesRegion;
+    });
+
+    const vehicleIds = new Set(filteredVehicles.map((v) => v.id));
+
+    // Filter trips associated with matching vehicles
+    const filteredTrips = rawData.trips.filter((t) => vehicleIds.has(t.vehicle_id));
+    
+    // Filter fuel logs, maintenance records, and expenses associated with matching vehicles
+    const filteredFuelLogs = rawData.fuelLogs.filter((f) => vehicleIds.has(f.vehicle_id));
+    const filteredMaintenance = rawData.maintenance.filter((m) => vehicleIds.has(m.vehicle_id));
+    const filteredExpenses = rawData.expenses.filter((e) => vehicleIds.has(e.vehicle_id));
+
+    // Keep all drivers, but let's filter those active on matching vehicles/trips for the "on trip" stat
+    const activeDriverIds = new Set(filteredTrips.map((t) => t.driver_id));
+    const filteredDrivers = rawData.drivers;
+
+    return {
+      vehicles: filteredVehicles,
+      drivers: filteredDrivers,
+      trips: filteredTrips,
+      fuelLogs: filteredFuelLogs,
+      maintenance: filteredMaintenance,
+      expenses: filteredExpenses,
+    };
+  }, [rawData, vehicleTypeFilter, statusFilter, regionFilter]);
+
+  const stats = useMemo(() => {
+    return filteredData ? computeStats(filteredData) : null;
+  }, [filteredData]);
+
+  const charts = useMemo(() => {
+    return filteredData ? computeChartData(filteredData) : null;
+  }, [filteredData]);
+
+  const vehicleTypes = useMemo(() => {
+    if (!rawData) return [];
+    return Array.from(new Set(rawData.vehicles.map((v) => v.type))).filter(Boolean);
+  }, [rawData]);
 
   if (loading) {
     return (
@@ -64,6 +129,60 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">Overview of your fleet operations.</p>
+      </div>
+
+      {/* Dashboard Filters */}
+      <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md p-4 shadow-sm">
+        <div className="flex items-center gap-2">
+          <Label className="text-sm font-medium">Type:</Label>
+          <Select value={vehicleTypeFilter} onValueChange={(v) => v !== null && setVehicleTypeFilter(v)}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              {vehicleTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label className="text-sm font-medium">Status:</Label>
+          <Select value={statusFilter} onValueChange={(v) => v !== null && setStatusFilter(v)}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="All Statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="on_trip">On Trip</SelectItem>
+              <SelectItem value="in_shop">In Shop</SelectItem>
+              <SelectItem value="retired">Retired</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Label className="text-sm font-medium">Region:</Label>
+          <Select value={regionFilter} onValueChange={(v) => v !== null && setRegionFilter(v)}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="All Regions" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Regions</SelectItem>
+              <SelectItem value="North">North</SelectItem>
+              <SelectItem value="South">South</SelectItem>
+              <SelectItem value="East">East</SelectItem>
+              <SelectItem value="West">West</SelectItem>
+              <SelectItem value="Central">Central</SelectItem>
+              <SelectItem value="none">No Region</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Primary KPIs */}
@@ -102,25 +221,25 @@ export default function DashboardPage() {
           title="Available"
           value={stats.availableVehicles}
           icon={<CheckCircle2 className="h-4 w-4" />}
-          color="text-green-600 bg-green-50"
+          color="text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
         />
         <StatusCard
           title="On Trip"
           value={stats.vehiclesOnTrip}
           icon={<Clock className="h-4 w-4" />}
-          color="text-blue-600 bg-blue-50"
+          color="text-blue-500 bg-blue-500/10 border-blue-500/20"
         />
         <StatusCard
           title="In Shop"
           value={stats.vehiclesInShop}
           icon={<Wrench className="h-4 w-4" />}
-          color="text-orange-600 bg-orange-50"
+          color="text-amber-500 bg-amber-500/10 border-amber-500/20"
         />
         <StatusCard
           title="Retired"
           value={stats.vehiclesRetired}
           icon={<AlertTriangle className="h-4 w-4" />}
-          color="text-gray-600 bg-gray-50"
+          color="text-rose-500 bg-rose-500/10 border-rose-500/20"
         />
       </div>
 
@@ -180,14 +299,17 @@ function KPICard({
   subtitle?: string;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-6 shadow-sm">
+    <div className="group relative overflow-hidden rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300">
+      <div className="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-primary/5 blur-xl group-hover:bg-primary/10 transition-colors" />
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-muted-foreground">{title}</p>
-        <div className={color}>{icon}</div>
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
+        <div className={cn("rounded-xl p-2.5 bg-accent/40 text-foreground border border-border/30 group-hover:scale-110 transition-transform duration-300", color)}>
+          {icon}
+        </div>
       </div>
-      <p className="mt-2 text-3xl font-bold">{value}</p>
+      <p className="mt-4 text-3xl font-extrabold tracking-tight">{value}</p>
       {subtitle && (
-        <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
+        <p className="mt-1 text-xs text-muted-foreground font-medium flex items-center gap-1.5">{subtitle}</p>
       )}
     </div>
   );
@@ -205,12 +327,16 @@ function StatusCard({
   color: string;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-sm">
-      <div className="flex items-center gap-2">
-        <div className={`rounded-lg p-1.5 ${color}`}>{icon}</div>
-        <span className="text-sm font-medium text-muted-foreground">{title}</span>
+    <div className="group rounded-2xl border border-border/40 bg-card/60 p-4 shadow-sm hover:shadow-md hover:border-primary/10 transition-all duration-300">
+      <div className="flex items-center gap-3">
+        <div className={cn("rounded-xl p-2 border transition-transform duration-300 group-hover:scale-105", color)}>
+          {icon}
+        </div>
+        <div>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</span>
+          <p className="text-xl font-bold tracking-tight mt-0.5">{value}</p>
+        </div>
       </div>
-      <p className="mt-2 text-2xl font-bold">{value}</p>
     </div>
   );
 }
@@ -226,11 +352,11 @@ function SummaryRow({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-sm flex items-center gap-2">
-        <span className={`h-2 w-2 rounded-full ${dot}`} />
+      <span className="text-sm flex items-center gap-2 text-muted-foreground">
+        <span className={`h-2.5 w-2.5 rounded-full ${dot} shadow-sm shadow-black/10`} />
         {label}
       </span>
-      <span className="font-semibold">{value}</span>
+      <span className="font-semibold text-foreground">{value}</span>
     </div>
   );
 }

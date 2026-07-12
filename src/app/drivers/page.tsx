@@ -111,7 +111,7 @@ export default function DriversPage() {
         </div>
         <Button onClick={openCreateDialog}>Add Driver</Button>
       </div>
-      <div className="rounded-xl border bg-card">
+      <div className="rounded-2xl border border-border/40 bg-card overflow-hidden shadow-sm">
         {loading ? (
           <div className="flex h-24 items-center justify-center text-muted-foreground">
             Loading drivers...

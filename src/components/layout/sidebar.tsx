@@ -4,27 +4,44 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
+import { useTheme } from "@/contexts/theme-context";
 import { createClient } from "@/lib/supabase/client";
 import { roleConfig, canAccessPage, type UserRole } from "@/lib/rbac";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  LayoutDashboard,
+  Truck,
+  Users,
+  Navigation,
+  Wrench,
+  Fuel,
+  Receipt,
+  BarChart3,
+  ShieldCheck,
+  Sun,
+  Moon,
+  LogOut,
+} from "lucide-react";
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", page: "dashboard", icon: "M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5zm10 0a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5zM4 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4zm10 0a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-4z" },
-  { label: "Vehicles", href: "/vehicles", page: "vehicles", icon: "M8 17a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM2 4a2 2 0 0 1 2-2h9l4 4v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4z" },
-  { label: "Drivers", href: "/drivers", page: "drivers", icon: "M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zm-4 7a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z" },
-  { label: "Trips", href: "/trips", page: "trips", icon: "M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7" },
-  { label: "Maintenance", href: "/maintenance", page: "maintenance", icon: "M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" },
-  { label: "Fuel Logs", href: "/fuel", page: "fuel", icon: "M3 22V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16m-8 0h8m-8 0H3m8 0h1m-6 0h5m5-14V4m0 0h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2V5z" },
-  { label: "Expenses", href: "/expenses", page: "expenses", icon: "M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2L4 2zm3 14h10m-10-4h10m-10-4h4" },
-  { label: "Analytics", href: "/analytics", page: "analytics", icon: "M18 20V10m-6 10V4m-6 16v-6" },
-  { label: "Team", href: "/settings/team", page: "settings", icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm14 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" },
+  { label: "Dashboard", href: "/dashboard", page: "dashboard", icon: LayoutDashboard },
+  { label: "Vehicles", href: "/vehicles", page: "vehicles", icon: Truck },
+  { label: "Drivers", href: "/drivers", page: "drivers", icon: Users },
+  { label: "Trips", href: "/trips", page: "trips", icon: Navigation },
+  { label: "Maintenance", href: "/maintenance", page: "maintenance", icon: Wrench },
+  { label: "Fuel Logs", href: "/fuel", page: "fuel", icon: Fuel },
+  { label: "Expenses", href: "/expenses", page: "expenses", icon: Receipt },
+  { label: "Analytics", href: "/analytics", page: "analytics", icon: BarChart3 },
+  { label: "Team", href: "/settings/team", page: "settings", icon: ShieldCheck },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const supabase = createClient();
 
   const userRole = profile?.role as UserRole | undefined;
@@ -39,63 +56,105 @@ export function Sidebar() {
     ? navItems.filter((item) => canAccessPage(userRole, item.page))
     : navItems;
 
+  const userInitials = user?.email
+    ? user.email.slice(0, 2).toUpperCase()
+    : "US";
+
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r bg-card">
-      <div className="flex h-16 items-center border-b px-6">
-        <Link href="/dashboard" className="text-xl font-bold text-primary">
-          TransitOps
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-border/40 bg-card/80 backdrop-blur-xl transition-all duration-300">
+      <div className="flex h-16 items-center border-b border-border/40 px-6">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary transition-opacity hover:opacity-90"
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Truck className="h-5 w-5" />
+          </div>
+          <span className="bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
+            TransitOps
+          </span>
         </Link>
       </div>
+
       <nav className="flex-1 space-y-1 p-4">
         {visibleNavItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
+          const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:translate-x-1.5",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
               )}
             >
-              <svg
-                className="h-4 w-4 shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d={item.icon} />
-              </svg>
+              <Icon
+                className={cn(
+                  "h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110",
+                  isActive ? "text-primary-foreground" : "text-muted-foreground/80 group-hover:text-foreground"
+                )}
+              />
               {item.label}
             </Link>
           );
         })}
       </nav>
-      <div className="border-t p-4">
-        {userRole && (
-          <Badge
-            variant="secondary"
-            className={cn("mb-2 text-xs", roleConfig[userRole]?.color)}
-          >
-            {roleConfig[userRole]?.label}
-          </Badge>
-        )}
-        <div className="mb-2 text-xs text-muted-foreground truncate">
-          {user?.email}
+
+      <div className="mt-auto border-t border-border/40 p-4 space-y-4">
+        {/* User Card */}
+        <div className="flex items-center gap-3 rounded-xl bg-accent/30 p-2 border border-border/30">
+          <Avatar className="h-9 w-9 border border-border/40">
+            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
+              {userInitials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-semibold text-foreground truncate">
+              {profile?.full_name || user?.email?.split("@")[0]}
+            </div>
+            {userRole && (
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "mt-0.5 text-[10px] font-medium leading-none px-1.5 py-0.5 border border-border/50",
+                  roleConfig[userRole]?.color
+                )}
+              >
+                {roleConfig[userRole]?.label}
+              </Badge>
+            )}
+          </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full"
-          onClick={handleLogout}
-        >
-          Sign Out
-        </Button>
+
+        {/* Action buttons */}
+        <div className="flex items-center justify-between gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleTheme}
+            className="rounded-xl border-border/40 bg-transparent hover:bg-accent"
+            title="Toggle theme"
+          >
+            {theme === "light" ? (
+              <Moon className="h-[1.1rem] w-[1.1rem] text-foreground transition-all duration-300" />
+            ) : (
+              <Sun className="h-[1.1rem] w-[1.1rem] text-foreground transition-all duration-300" />
+            )}
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleLogout}
+            className="flex-1 rounded-xl border-border/40 bg-transparent hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 text-xs"
+          >
+            <LogOut className="mr-1.5 h-3.5 w-3.5" />
+            Sign Out
+          </Button>
+        </div>
       </div>
     </aside>
   );

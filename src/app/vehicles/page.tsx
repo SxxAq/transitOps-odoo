@@ -168,68 +168,42 @@ export default function VehiclesPage() {
       </div>
 
       <div className="grid grid-cols-4 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">
-              Total
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <TruckIcon className="size-5 text-muted-foreground" />
-              <span className="text-2xl font-bold">
-                {statusCounts.all || 0}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">
-              Available
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <VehicleStatusBadge status="available" />
-            <span className="ml-2 text-2xl font-bold">
-              {statusCounts.available || 0}
-            </span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">
-              On Trip
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <VehicleStatusBadge status="on_trip" />
-            <span className="ml-2 text-2xl font-bold">
-              {statusCounts.on_trip || 0}
-            </span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">
-              In Shop
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <VehicleStatusBadge status="in_shop" />
-            <span className="ml-2 text-2xl font-bold">
-              {statusCounts.in_shop || 0}
-            </span>
-          </CardContent>
-        </Card>
+        <div className="group rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Vehicles</p>
+          <div className="flex items-center gap-2 mt-2">
+            <TruckIcon className="size-5 text-primary" />
+            <span className="text-2xl font-bold">{statusCounts.all || 0}</span>
+          </div>
+        </div>
+        <div className="group rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Available</p>
+          <div className="flex items-center gap-2 mt-2">
+            <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/40" />
+            <span className="text-2xl font-bold">{statusCounts.available || 0}</span>
+          </div>
+        </div>
+        <div className="group rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">On Trip</p>
+          <div className="flex items-center gap-2 mt-2">
+            <div className="h-2.5 w-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/40" />
+            <span className="text-2xl font-bold">{statusCounts.on_trip || 0}</span>
+          </div>
+        </div>
+        <div className="group rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">In Shop</p>
+          <div className="flex items-center gap-2 mt-2">
+            <div className="h-2.5 w-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/40" />
+            <span className="text-2xl font-bold">{statusCounts.in_shop || 0}</span>
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 bg-card/45 border border-border/30 rounded-2xl p-4">
         <div className="relative flex-1 max-w-sm">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
             placeholder="Search by reg. number, model, or type..."
-            className="pl-9"
+            className="pl-9 rounded-xl border-border/40 bg-background/50 focus-visible:ring-primary"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -238,7 +212,7 @@ export default function VehiclesPage() {
           value={statusFilter}
           onValueChange={(value) => setStatusFilter(value as FilterStatus)}
         >
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-44 rounded-xl border-border/40 bg-background/50 focus:ring-primary">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent>
@@ -251,7 +225,7 @@ export default function VehiclesPage() {
         </Select>
       </div>
 
-      <div className="rounded-xl border bg-card">
+      <div className="rounded-2xl border border-border/40 bg-card overflow-hidden shadow-sm">
         {isLoading ? (
           <div className="flex items-center justify-center p-8 text-muted-foreground">
             Loading vehicles...

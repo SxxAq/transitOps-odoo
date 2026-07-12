@@ -40,6 +40,7 @@ create table if not exists vehicles (
   acquisition_cost numeric not null default 0 check (acquisition_cost >= 0),
   status text not null default 'available'
     check (status in ('available', 'on_trip', 'in_shop', 'retired')),
+  region text check (region is null or region in ('North', 'South', 'East', 'West', 'Central')),
   created_at timestamptz not null default now()
 );
 
@@ -169,18 +170,18 @@ create index if not exists idx_expenses_vehicle on expenses(vehicle_id);
 -- SEED DATA: Vehicles (10)
 -- ============================================
 
-insert into vehicles (registration_number, model, type, capacity, odometer, acquisition_cost, status) values
-  ('MH-01-AB-1234', 'Tata Ace Gold', 'Van', 800, 34200, 850000, 'available'),
-  ('MH-02-CD-5678', 'Eicher Pro 2049', 'Van', 1000, 51000, 1200000, 'available'),
-  ('DL-03-EF-9012', 'Mahindra Bolero Pickup', 'Truck', 1200, 28000, 950000, 'on_trip'),
-  ('KA-04-GH-3456', 'Tata Prima 2525.K', 'Truck', 5000, 120000, 2500000, 'available'),
-  ('GJ-05-IJ-7890', 'Ashok Leyland Dost+', 'Truck', 4500, 98000, 800000, 'in_shop'),
-  ('TN-06-KL-2345', 'BharatBenz 1613', 'Truck', 6000, 75000, 1800000, 'available'),
-  ('UP-07-MN-6789', 'Force Traveller 26', 'Bus', 2000, 65000, 1500000, 'retired'),
-  ('RJ-08-OP-0123', 'Tata Ultra 1012', 'Trailer', 8000, 42000, 1600000, 'available'),
-  ('MH-09-QR-4567', 'Maruti Suzuki Eeco', 'Van', 900, 19000, 550000, 'on_trip'),
-  ('AP-10-ST-8901', 'Tata LPT 1613', 'Truck', 5500, 88000, 1400000, 'available')
-on conflict (registration_number) do nothing;
+insert into vehicles (registration_number, model, type, capacity, odometer, acquisition_cost, status, region) values
+  ('MH-01-AB-1234', 'Tata Ace Gold', 'Van', 800, 34200, 850000, 'available', 'North'),
+  ('MH-02-CD-5678', 'Eicher Pro 2049', 'Van', 1000, 51000, 1200000, 'available', 'South'),
+  ('DL-03-EF-9012', 'Mahindra Bolero Pickup', 'Truck', 1200, 28000, 950000, 'on_trip', 'East'),
+  ('KA-04-GH-3456', 'Tata Prima 2525.K', 'Truck', 5000, 120000, 2500000, 'available', 'West'),
+  ('GJ-05-IJ-7890', 'Ashok Leyland Dost+', 'Truck', 4500, 98000, 800000, 'in_shop', 'Central'),
+  ('TN-06-KL-2345', 'BharatBenz 1613', 'Truck', 6000, 75000, 1800000, 'available', 'North'),
+  ('UP-07-MN-6789', 'Force Traveller 26', 'Bus', 2000, 65000, 1500000, 'retired', 'South'),
+  ('RJ-08-OP-0123', 'Tata Ultra 1012', 'Trailer', 8000, 42000, 1600000, 'available', 'East'),
+  ('MH-09-QR-4567', 'Maruti Suzuki Eeco', 'Van', 900, 19000, 550000, 'on_trip', 'West'),
+  ('AP-10-ST-8901', 'Tata LPT 1613', 'Truck', 5500, 88000, 1400000, 'available', 'Central')
+on conflict (registration_number) do update set region = excluded.region;
 
 -- ============================================
 -- SEED DATA: Drivers (8)

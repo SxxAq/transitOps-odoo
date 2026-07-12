@@ -17,8 +17,17 @@ export function RBACGuard({
 
   useEffect(() => {
     if (loading) return;
-    if (!profile) return;
 
+    // No profile yet — user just signed up or profile is missing
+    // Redirect to onboarding so they can create profile + pick role
+    if (!profile) {
+      if (pathname !== "/onboarding") {
+        router.replace("/onboarding");
+      }
+      return;
+    }
+
+    // Profile exists but no role — need to pick one
     if (!profile.role) {
       if (pathname !== "/onboarding") {
         router.replace("/onboarding");
@@ -26,7 +35,7 @@ export function RBACGuard({
       return;
     }
 
-    // Dynamically import to avoid server-side issues
+    // Profile + role exist — check page access
     import("@/lib/rbac").then(({ canAccessPage }) => {
       const role = profile.role as import("@/lib/rbac").UserRole;
       if (!canAccessPage(role, page)) {
@@ -43,9 +52,7 @@ export function RBACGuard({
     );
   }
 
-  if (!profile) return null;
-
-  if (!profile.role) {
+  if (!profile || !profile.role) {
     if (pathname === "/onboarding") return <>{children}</>;
     return null;
   }

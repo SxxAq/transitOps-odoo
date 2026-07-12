@@ -28,6 +28,7 @@ create table if not exists vehicles (
   acquisition_cost numeric not null default 0 check (acquisition_cost >= 0),
   status text not null default 'available'
     check (status in ('available', 'on_trip', 'in_shop', 'retired')),
+  region text check (region is null or region in ('North', 'South', 'East', 'West', 'Central')),
   created_at timestamptz not null default now()
 );
 

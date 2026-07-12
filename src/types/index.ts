@@ -9,7 +9,7 @@ export interface Profile {
   id: string;
   email: string;
   full_name: string;
-  role: UserRole;
+  role: UserRole | null;
   created_at: string;
 }
 
@@ -22,6 +22,7 @@ export interface Vehicle {
   odometer: number;
   acquisition_cost: number;
   status: VehicleStatus;
+  region?: string | null;
   created_at: string;
 }
 
