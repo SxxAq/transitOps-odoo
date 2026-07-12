@@ -58,14 +58,28 @@ export default function DriversPage() {
   };
 
   const handleCreate = async (data: DriverFormData) => {
-    await createDriver(data);
-    await refresh();
+    try {
+      await createDriver(data);
+      await refresh();
+    } catch (err: unknown) {
+      const msg = err && typeof err === "object" && "message" in err
+        ? (err as { message: string }).message
+        : String(err);
+      throw new Error(msg);
+    }
   };
 
   const handleEdit = async (data: DriverFormData) => {
     if (!selectedDriver) return;
-    await updateDriver(selectedDriver.id, data);
-    await refresh();
+    try {
+      await updateDriver(selectedDriver.id, data);
+      await refresh();
+    } catch (err: unknown) {
+      const msg = err && typeof err === "object" && "message" in err
+        ? (err as { message: string }).message
+        : String(err);
+      throw new Error(msg);
+    }
   };
 
   const handleDelete = async (id: string) => {

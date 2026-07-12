@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -76,9 +76,17 @@ export function DriverFormDialog({
     }
   }, [open, driver, reset]);
 
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const handleFormSubmit = async (data: DriverFormData) => {
-    await onSubmit(data);
-    onOpenChange(false);
+    try {
+      setSubmitError(null);
+      await onSubmit(data);
+      onOpenChange(false);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setSubmitError(msg);
+    }
   };
 
   return (
@@ -161,6 +169,9 @@ export function DriverFormDialog({
               )}
             </div>
           </div>
+          {submitError && (
+            <p className="text-sm text-destructive">{submitError}</p>
+          )}
           <DialogFooter>
             <Button
               type="button"
