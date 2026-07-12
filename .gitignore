@@ -24,3 +24,4 @@ npm-debug.log*
 next-env.d.ts
 .vercel
 agent.md
+implementation_plan.pdf
