@@ -1,9 +1,8 @@
 "use client";
 
 import { useAuth } from "@/contexts/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { canAccessPage, type UserRole } from "@/lib/rbac";
 
 export function RBACGuard({
   page,
@@ -14,15 +13,27 @@ export function RBACGuard({
 }) {
   const { profile, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (loading) return;
     if (!profile) return;
-    const role = profile.role as UserRole;
-    if (!canAccessPage(role, page)) {
-      router.replace("/dashboard");
+
+    if (!profile.role) {
+      if (pathname !== "/onboarding") {
+        router.replace("/onboarding");
+      }
+      return;
     }
-  }, [profile, loading, page, router]);
+
+    // Dynamically import to avoid server-side issues
+    import("@/lib/rbac").then(({ canAccessPage }) => {
+      const role = profile.role as import("@/lib/rbac").UserRole;
+      if (!canAccessPage(role, page)) {
+        router.replace("/dashboard");
+      }
+    });
+  }, [profile, loading, page, router, pathname]);
 
   if (loading) {
     return (
@@ -34,8 +45,10 @@ export function RBACGuard({
 
   if (!profile) return null;
 
-  const role = profile.role as UserRole;
-  if (!canAccessPage(role, page)) return null;
+  if (!profile.role) {
+    if (pathname === "/onboarding") return <>{children}</>;
+    return null;
+  }
 
   return <>{children}</>;
 }

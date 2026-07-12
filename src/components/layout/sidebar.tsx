@@ -18,6 +18,7 @@ const navItems = [
   { label: "Fuel Logs", href: "/fuel", page: "fuel", icon: "M3 22V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16m-8 0h8m-8 0H3m8 0h1m-6 0h5m5-14V4m0 0h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2V5z" },
   { label: "Expenses", href: "/expenses", page: "expenses", icon: "M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2L4 2zm3 14h10m-10-4h10m-10-4h4" },
   { label: "Analytics", href: "/analytics", page: "analytics", icon: "M18 20V10m-6 10V4m-6 16v-6" },
+  { label: "Team", href: "/settings/team", page: "settings", icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm14 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" },
 ];
 
 export function Sidebar() {

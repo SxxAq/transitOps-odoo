@@ -8,7 +8,7 @@ create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text not null,
   full_name text not null default '',
-  role text not null default 'fleet_manager'
+  role text
     check (role in ('fleet_manager', 'driver', 'safety_officer', 'financial_analyst')),
   created_at timestamptz not null default now()
 );
