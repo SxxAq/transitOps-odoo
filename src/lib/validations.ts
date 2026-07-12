@@ -31,9 +31,8 @@ export const tripSchema = z.object({
 
 export const maintenanceSchema = z.object({
   vehicle_id: z.string().min(1, "Vehicle is required"),
-  description: z.string().min(1, "Description is required"),
-  start_date: z.string().min(1, "Start date is required"),
-  end_date: z.string().nullable().optional(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
   cost: z.number().min(0, "Cost cannot be negative"),
 });
 
@@ -49,7 +48,7 @@ export const expenseSchema = z.object({
   trip_id: z.string().nullable().optional(),
   type: z.enum(["toll", "maintenance", "miscellaneous"]),
   amount: z.number().positive("Amount must be positive"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string(),
   date: z.string().min(1, "Date is required"),
 });
 

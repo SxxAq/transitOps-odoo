@@ -2,6 +2,8 @@ export type VehicleStatus = "available" | "on_trip" | "in_shop" | "retired";
 export type DriverStatus = "available" | "on_trip" | "off_duty" | "suspended";
 export type TripStatus = "draft" | "dispatched" | "completed" | "cancelled";
 export type UserRole = "fleet_manager" | "driver" | "safety_officer" | "financial_analyst";
+export type MaintenanceStatus = "open" | "closed";
+export type ExpenseType = "toll" | "maintenance" | "miscellaneous";
 
 export interface Profile {
   id: string;
@@ -37,12 +39,14 @@ export interface Driver {
 
 export interface Trip {
   id: string;
-  source: string;
-  destination: string;
   vehicle_id: string;
   driver_id: string;
+  source: string;
+  destination: string;
   cargo_weight: number;
   planned_distance: number;
+  fuel_used: number;
+  final_odometer: number;
   status: TripStatus;
   dispatched_at: string | null;
   completed_at: string | null;
@@ -52,11 +56,10 @@ export interface Trip {
 export interface MaintenanceRecord {
   id: string;
   vehicle_id: string;
+  title: string;
   description: string;
-  start_date: string;
-  end_date: string | null;
   cost: number;
-  status: "open" | "closed";
+  status: MaintenanceStatus;
   created_at: string;
 }
 
@@ -73,9 +76,19 @@ export interface Expense {
   id: string;
   vehicle_id: string;
   trip_id: string | null;
-  type: "toll" | "maintenance" | "miscellaneous";
+  type: ExpenseType;
   amount: number;
   description: string;
   date: string;
   created_at: string;
+}
+
+export interface DashboardStats {
+  activeVehicles: number;
+  availableVehicles: number;
+  vehiclesInShop: number;
+  activeTrips: number;
+  pendingTrips: number;
+  driversOnDuty: number;
+  fleetUtilization: number;
 }
