@@ -101,8 +101,8 @@ export function validateTripCreation(
 // ============================================
 
 export function dispatchTrip(
-  vehicle: Vehicle,
-  driver: Driver
+  _vehicle: Vehicle,
+  _driver: Driver
 ): { vehicleUpdate: Partial<Vehicle>; driverUpdate: Partial<Driver> } {
   return {
     vehicleUpdate: { status: "on_trip" },
@@ -111,8 +111,8 @@ export function dispatchTrip(
 }
 
 export function completeTrip(
-  vehicle: Vehicle,
-  driver: Driver
+  _vehicle: Vehicle,
+  _driver: Driver
 ): { vehicleUpdate: Partial<Vehicle>; driverUpdate: Partial<Driver> } {
   return {
     vehicleUpdate: { status: "available" },
@@ -121,8 +121,8 @@ export function completeTrip(
 }
 
 export function cancelTrip(
-  vehicle: Vehicle,
-  driver: Driver
+  _vehicle: Vehicle,
+  _driver: Driver
 ): { vehicleUpdate: Partial<Vehicle>; driverUpdate: Partial<Driver> } {
   return {
     vehicleUpdate: { status: "available" },
@@ -135,7 +135,7 @@ export function cancelTrip(
 // ============================================
 
 export function startMaintenance(
-  vehicle: Vehicle
+  _vehicle: Vehicle
 ): { vehicleUpdate: Partial<Vehicle> } {
   return { vehicleUpdate: { status: "in_shop" } };
 }

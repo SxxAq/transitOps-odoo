@@ -102,7 +102,6 @@ export default function TripsPage() {
   const watchedDriverId = watch("driver_id");
 
   const selectedVehicle = vehicles.find((v) => v.id === watchedVehicleId);
-  const selectedDriver = drivers.find((d) => d.id === watchedDriverId);
 
   const onCreate = async (data: TripFormData) => {
     setError("");

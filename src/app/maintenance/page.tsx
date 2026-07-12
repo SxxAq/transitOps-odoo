@@ -32,13 +32,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { maintenanceSchema, type MaintenanceFormData } from "@/lib/validations";
 import {
-  Wrench,
   Trash2,
   Plus,
   IndianRupee,
   CheckCircle2,
   Clock,
-  AlertCircle,
 } from "lucide-react";
 
 export default function MaintenancePage() {
