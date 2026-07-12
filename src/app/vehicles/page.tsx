@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import type { Vehicle, VehicleStatus } from "@/types";
 import type { VehicleFormData } from "@/lib/validations";
 import {
@@ -36,6 +37,7 @@ import { PlusIcon, SearchIcon, TruckIcon } from "lucide-react";
 type FilterStatus = "all" | VehicleStatus;
 
 export default function VehiclesPage() {
+  const router = useRouter();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,6 +102,10 @@ export default function VehiclesPage() {
     setIsFormOpen(true);
   };
 
+  const handleView = (vehicle: Vehicle) => {
+    router.push(`/vehicles/${vehicle.id}`);
+  };
+
   const handleDelete = (vehicle: Vehicle) => {
     setDeletingVehicle(vehicle);
   };
@@ -139,8 +145,13 @@ export default function VehiclesPage() {
   };
 
   const columns = useMemo(
-    () => getVehicleColumns({ onEdit: handleEdit, onDelete: handleDelete }),
-    []
+    () =>
+      getVehicleColumns({
+        onEdit: handleEdit,
+        onDelete: handleDelete,
+        onView: handleView,
+      }),
+    [handleEdit, handleDelete, handleView]
   );
 
   return (
@@ -159,40 +170,56 @@ export default function VehiclesPage() {
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">Total</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">
+              Total
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
               <TruckIcon className="size-5 text-muted-foreground" />
-              <span className="text-2xl font-bold">{statusCounts.all || 0}</span>
+              <span className="text-2xl font-bold">
+                {statusCounts.all || 0}
+              </span>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">Available</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">
+              Available
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <VehicleStatusBadge status="available" />
-            <span className="ml-2 text-2xl font-bold">{statusCounts.available || 0}</span>
+            <span className="ml-2 text-2xl font-bold">
+              {statusCounts.available || 0}
+            </span>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">On Trip</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">
+              On Trip
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <VehicleStatusBadge status="on_trip" />
-            <span className="ml-2 text-2xl font-bold">{statusCounts.on_trip || 0}</span>
+            <span className="ml-2 text-2xl font-bold">
+              {statusCounts.on_trip || 0}
+            </span>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-muted-foreground">In Shop</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground">
+              In Shop
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <VehicleStatusBadge status="in_shop" />
-            <span className="ml-2 text-2xl font-bold">{statusCounts.in_shop || 0}</span>
+            <span className="ml-2 text-2xl font-bold">
+              {statusCounts.in_shop || 0}
+            </span>
           </CardContent>
         </Card>
       </div>
@@ -248,6 +275,7 @@ export default function VehiclesPage() {
           </DialogHeader>
           <VehicleForm
             initialData={editingVehicle ?? undefined}
+            existingVehicles={vehicles}
             onSubmit={handleFormSubmit}
             onCancel={() => setIsFormOpen(false)}
             isLoading={isSubmitting}
@@ -264,8 +292,8 @@ export default function VehiclesPage() {
             <DialogTitle>Delete Vehicle</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete{" "}
-              <strong>{deletingVehicle?.registration_number}</strong>? This action
-              cannot be undone.
+              <strong>{deletingVehicle?.registration_number}</strong>? This
+              action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
