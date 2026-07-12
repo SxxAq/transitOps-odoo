@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { vehicleSchema, type VehicleFormData } from "@/lib/validations";
+import { isRegistrationUnique } from "@/lib/businessRules";
 import type { Vehicle } from "@/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,7 @@ import {
 
 interface VehicleFormProps {
   initialData?: Vehicle;
+  existingVehicles: Vehicle[];
   onSubmit: (data: VehicleFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
@@ -42,6 +44,7 @@ const vehicleStatuses = [
 
 export function VehicleForm({
   initialData,
+  existingVehicles,
   onSubmit,
   onCancel,
   isLoading,
@@ -77,6 +80,12 @@ export function VehicleForm({
 
   const selectedType = watch("type");
   const selectedStatus = watch("status");
+  const regNumber = watch("registration_number");
+
+  const regError =
+    regNumber && !isRegistrationUnique(regNumber, existingVehicles, initialData?.id)
+      ? "Registration number already exists"
+      : null;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -92,6 +101,9 @@ export function VehicleForm({
             <p className="text-xs text-destructive">
               {errors.registration_number.message}
             </p>
+          )}
+          {regError && !errors.registration_number && (
+            <p className="text-xs text-destructive">{regError}</p>
           )}
         </div>
 
@@ -136,7 +148,8 @@ export function VehicleForm({
           <Select
             value={selectedStatus}
             onValueChange={(value) => {
-              if (value !== null) setValue("status", value as VehicleFormData["status"]);
+              if (value !== null)
+                setValue("status", value as VehicleFormData["status"]);
             }}
           >
             <SelectTrigger className="w-full">
@@ -203,8 +216,15 @@ export function VehicleForm({
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : initialData ? "Update Vehicle" : "Add Vehicle"}
+        <Button
+          type="submit"
+          disabled={isLoading || !!regError}
+        >
+          {isLoading
+            ? "Saving..."
+            : initialData
+              ? "Update Vehicle"
+              : "Add Vehicle"}
         </Button>
       </div>
     </form>

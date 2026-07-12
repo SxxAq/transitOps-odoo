@@ -4,16 +4,18 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { Vehicle } from "@/types";
 import { VehicleStatusBadge } from "./vehicle-status-badge";
 import { Button } from "@/components/ui/button";
-import { PencilIcon, TrashIcon } from "lucide-react";
+import { EyeIcon, PencilIcon, TrashIcon } from "lucide-react";
 
 interface VehicleColumnsProps {
   onEdit: (vehicle: Vehicle) => void;
   onDelete: (vehicle: Vehicle) => void;
+  onView: (vehicle: Vehicle) => void;
 }
 
 export function getVehicleColumns({
   onEdit,
   onDelete,
+  onView,
 }: VehicleColumnsProps): ColumnDef<Vehicle>[] {
   return [
     {
@@ -36,7 +38,9 @@ export function getVehicleColumns({
     {
       accessorKey: "odometer",
       header: "Odometer",
-      cell: ({ row }) => <span>{row.original.odometer.toLocaleString()} km</span>,
+      cell: ({ row }) => (
+        <span>{row.original.odometer.toLocaleString()} km</span>
+      ),
     },
     {
       accessorKey: "acquisition_cost",
@@ -55,6 +59,13 @@ export function getVehicleColumns({
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex gap-1">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => onView(row.original)}
+          >
+            <EyeIcon />
+          </Button>
           <Button
             variant="ghost"
             size="icon-sm"
