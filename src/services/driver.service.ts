@@ -4,7 +4,10 @@ import type { Driver } from "@/types";
 export async function getDrivers(): Promise<Driver[]> {
   const supabase = createClient();
   const { data, error } = await supabase.from("drivers").select("*").order("created_at", { ascending: false });
-  if (error) throw error;
+  if (error) {
+    console.error("Supabase error:", error.message, error.code, error.details);
+    throw error;
+  }
   return data ?? [];
 }
 
