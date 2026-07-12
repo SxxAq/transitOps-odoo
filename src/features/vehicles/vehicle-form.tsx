@@ -197,7 +197,7 @@ export function VehicleForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="acquisition_cost">Acquisition Cost ($)</Label>
+          <Label htmlFor="acquisition_cost">Acquisition Cost (₹)</Label>
           <Input
             id="acquisition_cost"
             type="number"

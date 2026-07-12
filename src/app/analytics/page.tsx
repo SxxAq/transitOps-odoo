@@ -86,10 +86,10 @@ export default function AnalyticsPage() {
         />
         <AnalyticsCard
           title="Operational Cost"
-          value={`$${data.operationalCost.toLocaleString()}`}
+          value={`₹${data.operationalCost.toLocaleString()}`}
           icon={<DollarSign className="h-5 w-5" />}
           color="text-orange-500"
-          subtitle={`$${data.totalFuelCost.toFixed(0)} fuel + $${data.totalMaintenanceCost.toFixed(0)} maint`}
+          subtitle={`₹${data.totalFuelCost.toFixed(0)} fuel + ₹${data.totalMaintenanceCost.toFixed(0)} maint`}
         />
         <AnalyticsCard
           title="Fleet Utilization"
@@ -102,7 +102,7 @@ export default function AnalyticsPage() {
           value={`${data.vehicleROI}%`}
           icon={<TrendingUp className="h-5 w-5" />}
           color="text-purple-500"
-          subtitle={`$${data.totalRevenue.toLocaleString()} est. revenue`}
+          subtitle={`₹${data.totalRevenue.toLocaleString()} est. revenue`}
         />
       </div>
 
@@ -120,7 +120,7 @@ export default function AnalyticsPage() {
                 <XAxis dataKey="regNumber" fontSize={12} tickLine={false} />
                 <YAxis fontSize={12} tickLine={false} />
                 <Tooltip
-                  formatter={(value) => [`$${Number(value).toFixed(2)}`]}
+                  formatter={(value) => [`₹${Number(value).toFixed(2)}`]}
                 />
                 <Legend />
                 <Bar dataKey="fuelCost" name="Fuel" fill="#3b82f6" stackId="a" />
@@ -176,7 +176,7 @@ export default function AnalyticsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-3 text-right font-medium">
-                      ${v.totalCost.toLocaleString()}
+                      ₹{v.totalCost.toLocaleString()}
                     </td>
                   </tr>
                 ))}

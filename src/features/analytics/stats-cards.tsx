@@ -36,7 +36,7 @@ export function StatsCards({ vehicles, drivers, trips, expenses }: StatsCardsPro
     },
     {
       title: "Total Expenses",
-      value: `$${totalExpense.toLocaleString()}`,
+      value: `₹${totalExpense.toLocaleString()}`,
       subtitle: `${expenses.length} entries`,
       icon: "receipt",
     },

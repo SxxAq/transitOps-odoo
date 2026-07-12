@@ -141,7 +141,7 @@ export default function VehicleDetailPage() {
             <div className="flex justify-between">
               <span className="text-muted-foreground">Acquisition Cost</span>
               <span className="font-medium">
-                ${vehicle.acquisition_cost.toLocaleString()}
+                ₹{vehicle.acquisition_cost.toLocaleString()}
               </span>
             </div>
             <Separator />

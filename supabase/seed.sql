@@ -170,16 +170,16 @@ create index if not exists idx_expenses_vehicle on expenses(vehicle_id);
 -- ============================================
 
 insert into vehicles (registration_number, model, type, capacity, odometer, acquisition_cost, status) values
-  ('VAN-01', 'Toyota HiAce', 'Van', 800, 34200, 28000, 'available'),
-  ('VAN-02', 'Ford Transit', 'Van', 1000, 51000, 32000, 'available'),
-  ('VAN-03', 'Mercedes Sprinter', 'Van', 1200, 28000, 45000, 'on_trip'),
-  ('TRK-01', 'Volvo FH16', 'Truck', 5000, 120000, 85000, 'available'),
-  ('TRK-02', 'Scania R450', 'Truck', 45000, 98000, 78000, 'in_shop'),
-  ('TRK-03', 'MAN TGX', 'Truck', 6000, 75000, 72000, 'available'),
-  ('BUS-01', 'Isuzu Erga Mio', 'Bus', 2000, 65000, 55000, 'retired'),
-  ('TRL-01', 'Schmitz Cargobull', 'Trailer', 8000, 42000, 35000, 'available'),
-  ('VAN-04', 'Nissan NV350', 'Van', 900, 19000, 26000, 'on_trip'),
-  ('TRK-04', 'Hino 700', 'Truck', 5500, 88000, 68000, 'available')
+  ('MH-01-AB-1234', 'Tata Ace Gold', 'Van', 800, 34200, 850000, 'available'),
+  ('MH-02-CD-5678', 'Eicher Pro 2049', 'Van', 1000, 51000, 1200000, 'available'),
+  ('DL-03-EF-9012', 'Mahindra Bolero Pickup', 'Truck', 1200, 28000, 950000, 'on_trip'),
+  ('KA-04-GH-3456', 'Tata Prima 2525.K', 'Truck', 5000, 120000, 2500000, 'available'),
+  ('GJ-05-IJ-7890', 'Ashok Leyland Dost+', 'Truck', 4500, 98000, 800000, 'in_shop'),
+  ('TN-06-KL-2345', 'BharatBenz 1613', 'Truck', 6000, 75000, 1800000, 'available'),
+  ('UP-07-MN-6789', 'Force Traveller 26', 'Bus', 2000, 65000, 1500000, 'retired'),
+  ('RJ-08-OP-0123', 'Tata Ultra 1012', 'Trailer', 8000, 42000, 1600000, 'available'),
+  ('MH-09-QR-4567', 'Maruti Suzuki Eeco', 'Van', 900, 19000, 550000, 'on_trip'),
+  ('AP-10-ST-8901', 'Tata LPT 1613', 'Truck', 5500, 88000, 1400000, 'available')
 on conflict (registration_number) do nothing;
 
 -- ============================================
@@ -187,62 +187,61 @@ on conflict (registration_number) do nothing;
 -- ============================================
 
 insert into drivers (name, license_number, license_category, license_expiry, contact, safety_score, status) values
-  ('Alex Johnson', 'LIC-1001', 'B', '2027-06-15', '+1 555-0101', 95, 'available'),
-  ('Maria Garcia', 'LIC-1002', 'C', '2026-11-20', '+1 555-0102', 88, 'on_trip'),
-  ('David Chen', 'LIC-1003', 'B', '2025-03-10', '+1 555-0103', 72, 'available'),
-  ('Sarah Williams', 'LIC-1004', 'D', '2028-01-25', '+1 555-0104', 91, 'available'),
-  ('James Brown', 'LIC-1005', 'B', '2024-08-30', '+1 555-0105', 65, 'suspended'),
-  ('Emily Davis', 'LIC-1006', 'C', '2027-04-18', '+1 555-0106', 82, 'off_duty'),
-  ('Omar Hassan', 'LIC-1007', 'B', '2026-09-05', '+1 555-0107', 94, 'available'),
-  ('Lisa Martinez', 'LIC-1008', 'B', '2027-12-01', '+1 555-0108', 89, 'on_trip')
+  ('Rajesh Kumar', 'MH-2024-1001', 'B', '2027-06-15', '+91 98765 43210', 95, 'available'),
+  ('Priya Sharma', 'DL-2024-1002', 'C', '2026-11-20', '+91 98123 45678', 88, 'on_trip'),
+  ('Amit Patel', 'GJ-2024-1003', 'B', '2025-03-10', '+91 99876 54321', 72, 'available'),
+  ('Sneha Reddy', 'KA-2024-1004', 'D', '2028-01-25', '+91 87654 32109', 91, 'available'),
+  ('Vikram Singh', 'UP-2024-1005', 'B', '2024-08-30', '+91 76543 21098', 65, 'suspended'),
+  ('Deepa Nair', 'TN-2024-1006', 'C', '2027-04-18', '+91 65432 10987', 82, 'off_duty'),
+  ('Mohammed Irfan', 'MH-2024-1007', 'B', '2026-09-05', '+91 54321 09876', 94, 'available'),
+  ('Kavitha Menon', 'AP-2024-1008', 'B', '2027-12-01', '+91 43210 98765', 89, 'on_trip')
 on conflict (license_number) do nothing;
 
 -- ============================================
 -- SEED DATA: Trips (6)
 -- ============================================
 
--- We need vehicle and driver IDs, so use subqueries
 insert into trips (vehicle_id, driver_id, source, destination, cargo_weight, planned_distance, fuel_used, final_odometer, status, dispatched_at, completed_at)
 select
-  (select id from vehicles where registration_number = 'VAN-03'),
-  (select id from drivers where license_number = 'LIC-1002'),
-  'Lahore Warehouse', 'Islamabad Hub', 850, 380, 42, 28042, 'dispatched', now() - interval '2 hours', null
-where not exists (select 1 from trips where source = 'Lahore Warehouse' and destination = 'Islamabad Hub');
+  (select id from vehicles where registration_number = 'DL-03-EF-9012'),
+  (select id from drivers where license_number = 'DL-2024-1002'),
+  'Mumbai Warehouse', 'Delhi Hub', 850, 1400, 145, 28145, 'dispatched', now() - interval '2 hours', null
+where not exists (select 1 from trips where source = 'Mumbai Warehouse' and destination = 'Delhi Hub');
 
 insert into trips (vehicle_id, driver_id, source, destination, cargo_weight, planned_distance, fuel_used, final_odometer, status, dispatched_at, completed_at)
 select
-  (select id from vehicles where registration_number = 'VAN-04'),
-  (select id from drivers where license_number = 'LIC-1008'),
-  'Karachi Port', 'Multan Depot', 600, 520, 55, 19055, 'dispatched', now() - interval '5 hours', null
-where not exists (select 1 from trips where source = 'Karachi Port' and destination = 'Multan Depot');
+  (select id from vehicles where registration_number = 'MH-09-QR-4567'),
+  (select id from drivers where license_number = 'AP-2024-1008'),
+  'Chennai Port', 'Hyderabad Depot', 600, 800, 82, 19800, 'dispatched', now() - interval '5 hours', null
+where not exists (select 1 from trips where source = 'Chennai Port' and destination = 'Hyderabad Depot');
 
 insert into trips (vehicle_id, driver_id, source, destination, cargo_weight, planned_distance, fuel_used, final_odometer, status, dispatched_at, completed_at)
 select
-  (select id from vehicles where registration_number = 'VAN-01'),
-  (select id from drivers where license_number = 'LIC-1001'),
-  'Faisalabad Hub', 'Peshawar Gate', 500, 450, 38, 34238, 'completed', now() - interval '1 day', now() - interval '3 hours'
-where not exists (select 1 from trips where source = 'Faisalabad Hub' and destination = 'Peshawar Gate');
+  (select id from vehicles where registration_number = 'MH-01-AB-1234'),
+  (select id from drivers where license_number = 'MH-2024-1001'),
+  'Pune Hub', 'Bangalore Gate', 500, 850, 92, 34238, 'completed', now() - interval '1 day', now() - interval '3 hours'
+where not exists (select 1 from trips where source = 'Pune Hub' and destination = 'Bangalore Gate');
 
 insert into trips (vehicle_id, driver_id, source, destination, cargo_weight, planned_distance, fuel_used, final_odometer, status, dispatched_at, completed_at)
 select
-  (select id from vehicles where registration_number = 'VAN-02'),
-  (select id from drivers where license_number = 'LIC-1004'),
-  'Quetta Terminal', 'Sukkur Yard', 700, 320, 0, 0, 'draft', null, null
-where not exists (select 1 from trips where source = 'Quetta Terminal' and destination = 'Sukkur Yard');
+  (select id from vehicles where registration_number = 'MH-02-CD-5678'),
+  (select id from drivers where license_number = 'KA-2024-1004'),
+  'Ahmedabad Terminal', 'Jaipur Yard', 700, 680, 0, 0, 'draft', null, null
+where not exists (select 1 from trips where source = 'Ahmedabad Terminal' and destination = 'Jaipur Yard');
 
 insert into trips (vehicle_id, driver_id, source, destination, cargo_weight, planned_distance, fuel_used, final_odometer, status, dispatched_at, completed_at)
 select
-  (select id from vehicles where registration_number = 'TRK-01'),
-  (select id from drivers where license_number = 'LIC-1007'),
-  'Lahore Factory', 'Gwadar Port', 4200, 1100, 120, 120120, 'completed', now() - interval '3 days', now() - interval '1 day'
-where not exists (select 1 from trips where source = 'Lahore Factory' and destination = 'Gwadar Port');
+  (select id from vehicles where registration_number = 'KA-04-GH-3456'),
+  (select id from drivers where license_number = 'MH-2024-1007'),
+  'Kolkata Factory', 'Mumbai Port', 4200, 2100, 245, 120120, 'completed', now() - interval '3 days', now() - interval '1 day'
+where not exists (select 1 from trips where source = 'Kolkata Factory' and destination = 'Mumbai Port');
 
 insert into trips (vehicle_id, driver_id, source, destination, cargo_weight, planned_distance, fuel_used, final_odometer, status, dispatched_at, completed_at)
 select
-  (select id from vehicles where registration_number = 'TRK-03'),
-  (select id from drivers where license_number = 'LIC-1003'),
-  'Islamabad Hub', 'Lahore Warehouse', 5500, 380, 0, 0, 'cancelled', null, null
-where not exists (select 1 from trips where source = 'Islamabad Hub' and destination = 'Lahore Warehouse');
+  (select id from vehicles where registration_number = 'TN-06-KL-2345'),
+  (select id from drivers where license_number = 'GJ-2024-1003'),
+  'Delhi Hub', 'Chennai Warehouse', 5500, 2200, 0, 0, 'cancelled', null, null
+where not exists (select 1 from trips where source = 'Delhi Hub' and destination = 'Chennai Warehouse');
 
 -- ============================================
 -- SEED DATA: Maintenance (5)
@@ -250,110 +249,110 @@ where not exists (select 1 from trips where source = 'Islamabad Hub' and destina
 
 insert into maintenance (vehicle_id, title, description, cost, status)
 select
-  (select id from vehicles where registration_number = 'TRK-02'),
-  'Engine Overhaul', 'Full engine rebuild due to high mileage', 4500, 'open'
-where not exists (select 1 from maintenance where title = 'Engine Overhaul' and vehicle_id = (select id from vehicles where registration_number = 'TRK-02'));
+  (select id from vehicles where registration_number = 'GJ-05-IJ-7890'),
+  'Engine Overhaul', 'Full engine rebuild due to high mileage', 125000, 'open'
+where not exists (select 1 from maintenance where title = 'Engine Overhaul' and vehicle_id = (select id from vehicles where registration_number = 'GJ-05-IJ-7890'));
 
 insert into maintenance (vehicle_id, title, description, cost, status)
 select
-  (select id from vehicles where registration_number = 'VAN-03'),
-  'Brake Pad Replacement', 'Front and rear brake pads replaced', 350, 'closed'
-where not exists (select 1 from maintenance where title = 'Brake Pad Replacement' and vehicle_id = (select id from vehicles where registration_number = 'VAN-03'));
+  (select id from vehicles where registration_number = 'DL-03-EF-9012'),
+  'Brake Pad Replacement', 'Front and rear brake pads replaced', 8500, 'closed'
+where not exists (select 1 from maintenance where title = 'Brake Pad Replacement' and vehicle_id = (select id from vehicles where registration_number = 'DL-03-EF-9012'));
 
 insert into maintenance (vehicle_id, title, description, cost, status)
 select
-  (select id from vehicles where registration_number = 'TRK-01'),
-  'Oil Change', 'Regular 10000km oil change service', 120, 'closed'
-where not exists (select 1 from maintenance where title = 'Oil Change' and vehicle_id = (select id from vehicles where registration_number = 'TRK-01'));
+  (select id from vehicles where registration_number = 'KA-04-GH-3456'),
+  'Oil Change', 'Regular 10000km oil change service', 3500, 'closed'
+where not exists (select 1 from maintenance where title = 'Oil Change' and vehicle_id = (select id from vehicles where registration_number = 'KA-04-GH-3456'));
 
 insert into maintenance (vehicle_id, title, description, cost, status)
 select
-  (select id from vehicles where registration_number = 'VAN-01'),
-  'AC Compressor Repair', 'AC not cooling, compressor replaced', 480, 'closed'
-where not exists (select 1 from maintenance where title = 'AC Compressor Repair' and vehicle_id = (select id from vehicles where registration_number = 'VAN-01'));
+  (select id from vehicles where registration_number = 'MH-01-AB-1234'),
+  'AC Compressor Repair', 'AC not cooling, compressor replaced', 12000, 'closed'
+where not exists (select 1 from maintenance where title = 'AC Compressor Repair' and vehicle_id = (select id from vehicles where registration_number = 'MH-01-AB-1234'));
 
 insert into maintenance (vehicle_id, title, description, cost, status)
 select
-  (select id from vehicles where registration_number = 'BUS-01'),
-  'Tire Replacement', 'All 6 tires replaced - vehicle retired after', 1200, 'closed'
-where not exists (select 1 from maintenance where title = 'Tire Replacement' and vehicle_id = (select id from vehicles where registration_number = 'BUS-01'));
+  (select id from vehicles where registration_number = 'UP-07-MN-6789'),
+  'Tire Replacement', 'All 6 tires replaced - vehicle retired after', 36000, 'closed'
+where not exists (select 1 from maintenance where title = 'Tire Replacement' and vehicle_id = (select id from vehicles where registration_number = 'UP-07-MN-6789'));
 
 -- ============================================
 -- SEED DATA: Fuel Logs (10)
 -- ============================================
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'VAN-01'), 45, 52.50, '2025-07-01'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'VAN-01') and date = '2025-07-01');
+select (select id from vehicles where registration_number = 'MH-01-AB-1234'), 45, 4680, '2025-07-01'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'MH-01-AB-1234') and date = '2025-07-01');
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'VAN-01'), 50, 58.00, '2025-07-05'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'VAN-01') and date = '2025-07-05');
+select (select id from vehicles where registration_number = 'MH-01-AB-1234'), 50, 5200, '2025-07-05'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'MH-01-AB-1234') and date = '2025-07-05');
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'VAN-02'), 60, 69.60, '2025-07-02'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'VAN-02') and date = '2025-07-02');
+select (select id from vehicles where registration_number = 'MH-02-CD-5678'), 60, 6240, '2025-07-02'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'MH-02-CD-5678') and date = '2025-07-02');
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'VAN-03'), 42, 48.72, '2025-07-03'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'VAN-03') and date = '2025-07-03');
+select (select id from vehicles where registration_number = 'DL-03-EF-9012'), 42, 4368, '2025-07-03'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'DL-03-EF-9012') and date = '2025-07-03');
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'TRK-01'), 180, 208.80, '2025-07-01'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'TRK-01') and date = '2025-07-01');
+select (select id from vehicles where registration_number = 'KA-04-GH-3456'), 180, 18720, '2025-07-01'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'KA-04-GH-3456') and date = '2025-07-01');
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'TRK-01'), 200, 232.00, '2025-07-06'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'TRK-01') and date = '2025-07-06');
+select (select id from vehicles where registration_number = 'KA-04-GH-3456'), 200, 20800, '2025-07-06'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'KA-04-GH-3456') and date = '2025-07-06');
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'TRK-03'), 160, 185.60, '2025-07-04'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'TRK-03') and date = '2025-07-04');
+select (select id from vehicles where registration_number = 'TN-06-KL-2345'), 160, 16640, '2025-07-04'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'TN-06-KL-2345') and date = '2025-07-04');
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'VAN-04'), 38, 44.08, '2025-07-02'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'VAN-04') and date = '2025-07-02');
+select (select id from vehicles where registration_number = 'MH-09-QR-4567'), 38, 3952, '2025-07-02'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'MH-09-QR-4567') and date = '2025-07-02');
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'TRK-04'), 170, 197.20, '2025-07-03'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'TRK-04') and date = '2025-07-03');
+select (select id from vehicles where registration_number = 'AP-10-ST-8901'), 170, 17680, '2025-07-03'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'AP-10-ST-8901') and date = '2025-07-03');
 
 insert into fuel_logs (vehicle_id, litres, cost, date)
-select (select id from vehicles where registration_number = 'TRK-04'), 155, 179.80, '2025-07-07'
-where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'TRK-04') and date = '2025-07-07');
+select (select id from vehicles where registration_number = 'AP-10-ST-8901'), 155, 16120, '2025-07-07'
+where not exists (select 1 from fuel_logs where vehicle_id = (select id from vehicles where registration_number = 'AP-10-ST-8901') and date = '2025-07-07');
 
 -- ============================================
 -- SEED DATA: Expenses (8)
 -- ============================================
 
 insert into expenses (vehicle_id, type, amount, description, date)
-select (select id from vehicles where registration_number = 'VAN-01'), 'toll', 25.00, 'Lahore-Islamabad Motorway Toll', '2025-07-01'
-where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'VAN-01') and description = 'Lahore-Islamabad Motorway Toll');
+select (select id from vehicles where registration_number = 'MH-01-AB-1234'), 'toll', 1850, 'Mumbai-Pune Expressway Toll', '2025-07-01'
+where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'MH-01-AB-1234') and description = 'Mumbai-Pune Expressway Toll');
 
 insert into expenses (vehicle_id, type, amount, description, date)
-select (select id from vehicles where registration_number = 'VAN-01'), 'maintenance', 480.00, 'AC Compressor Repair', '2025-07-03'
-where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'VAN-01') and description = 'AC Compressor Repair');
+select (select id from vehicles where registration_number = 'MH-01-AB-1234'), 'maintenance', 12000, 'AC Compressor Repair', '2025-07-03'
+where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'MH-01-AB-1234') and description = 'AC Compressor Repair');
 
 insert into expenses (vehicle_id, type, amount, description, date)
-select (select id from vehicles where registration_number = 'TRK-01'), 'toll', 65.00, 'Multan-Sukkur Highway Toll', '2025-07-01'
-where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'TRK-01') and description = 'Multan-Sukkur Highway Toll');
+select (select id from vehicles where registration_number = 'KA-04-GH-3456'), 'toll', 2200, 'Delhi-Agra Toll Plaza', '2025-07-01'
+where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'KA-04-GH-3456') and description = 'Delhi-Agra Toll Plaza');
 
 insert into expenses (vehicle_id, type, amount, description, date)
-select (select id from vehicles where registration_number = 'TRK-01'), 'maintenance', 120.00, 'Oil Change Service', '2025-07-04'
-where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'TRK-01') and description = 'Oil Change Service');
+select (select id from vehicles where registration_number = 'KA-04-GH-3456'), 'maintenance', 3500, 'Oil Change Service', '2025-07-04'
+where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'KA-04-GH-3456') and description = 'Oil Change Service');
 
 insert into expenses (vehicle_id, type, amount, description, date)
-select (select id from vehicles where registration_number = 'TRK-02'), 'maintenance', 4500.00, 'Engine Overhaul', '2025-07-02'
-where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'TRK-02') and description = 'Engine Overhaul');
+select (select id from vehicles where registration_number = 'GJ-05-IJ-7890'), 'maintenance', 125000, 'Engine Overhaul', '2025-07-02'
+where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'GJ-05-IJ-7890') and description = 'Engine Overhaul');
 
 insert into expenses (vehicle_id, type, amount, description, date)
-select (select id from vehicles where registration_number = 'VAN-03'), 'toll', 18.50, ' GT Road Toll Plaza', '2025-07-03'
-where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'VAN-03') and description = ' GT Road Toll Plaza');
+select (select id from vehicles where registration_number = 'DL-03-EF-9012'), 'toll', 650, 'NH-48 Toll Plaza', '2025-07-03'
+where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'DL-03-EF-9012') and description = 'NH-48 Toll Plaza');
 
 insert into expenses (vehicle_id, type, amount, description, date)
-select (select id from vehicles where registration_number = 'VAN-02'), 'miscellaneous', 75.00, 'Parking fees at Quetta Terminal', '2025-07-05'
-where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'VAN-02') and description = 'Parking fees at Quetta Terminal');
+select (select id from vehicles where registration_number = 'MH-02-CD-5678'), 'miscellaneous', 2500, 'Parking fees at Ahmedabad Terminal', '2025-07-05'
+where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'MH-02-CD-5678') and description = 'Parking fees at Ahmedabad Terminal');
 
 insert into expenses (vehicle_id, type, amount, description, date)
-select (select id from vehicles where registration_number = 'TRK-04'), 'maintenance', 320.00, 'Suspension Alignment', '2025-07-06'
-where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'TRK-04') and description = 'Suspension Alignment');
+select (select id from vehicles where registration_number = 'AP-10-ST-8901'), 'maintenance', 8500, 'Suspension Alignment', '2025-07-06'
+where not exists (select 1 from expenses where vehicle_id = (select id from vehicles where registration_number = 'AP-10-ST-8901') and description = 'Suspension Alignment');

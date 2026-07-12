@@ -46,7 +46,7 @@ export function getVehicleColumns({
       accessorKey: "acquisition_cost",
       header: "Cost",
       cell: ({ row }) => (
-        <span>${row.original.acquisition_cost.toLocaleString()}</span>
+        <span>₹{row.original.acquisition_cost.toLocaleString()}</span>
       ),
     },
     {

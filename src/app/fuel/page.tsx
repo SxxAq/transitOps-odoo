@@ -140,7 +140,7 @@ export default function FuelPage() {
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-primary" />
               <span className="text-2xl font-bold">
-                ${totalFuelCost.toLocaleString()}
+                ₹{totalFuelCost.toLocaleString()}
               </span>
             </div>
           </CardContent>
@@ -247,7 +247,7 @@ export default function FuelPage() {
                       </td>
                       <td className="px-4 py-3">{log.litres} L</td>
                       <td className="px-4 py-3 font-medium">
-                        ${log.cost.toLocaleString()}
+                        ₹{log.cost.toLocaleString()}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {new Date(log.date).toLocaleDateString()}
@@ -322,7 +322,7 @@ export default function FuelPage() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label>Cost ($)</Label>
+                <Label>Cost (₹)</Label>
                 <Input
                   type="number"
                   step="0.01"

@@ -214,7 +214,7 @@ export default function MaintenancePage() {
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-primary" />
               <span className="text-2xl font-bold">
-                ${totalCost.toLocaleString()}
+                ₹{totalCost.toLocaleString()}
               </span>
             </div>
           </CardContent>
@@ -340,7 +340,7 @@ export default function MaintenancePage() {
                         {record.description || "-"}
                       </td>
                       <td className="px-4 py-3 font-medium">
-                        ${record.cost.toLocaleString()}
+                        ₹{record.cost.toLocaleString()}
                       </td>
                       <td className="px-4 py-3">
                         <span
@@ -451,7 +451,7 @@ export default function MaintenancePage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Cost ($)</Label>
+              <Label>Cost (₹)</Label>
               <Input
                 type="number"
                 step="0.01"

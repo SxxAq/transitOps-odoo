@@ -171,7 +171,7 @@ export default function ExpensesPage() {
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-primary" />
               <span className="text-2xl font-bold">
-                ${totalExpenses.toLocaleString()}
+                ₹{totalExpenses.toLocaleString()}
               </span>
             </div>
           </CardContent>
@@ -186,7 +186,7 @@ export default function ExpensesPage() {
             <div className="flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-blue-500" />
               <span className="text-2xl font-bold">
-                ${tollTotal.toLocaleString()}
+                ₹{tollTotal.toLocaleString()}
               </span>
             </div>
           </CardContent>
@@ -201,7 +201,7 @@ export default function ExpensesPage() {
             <div className="flex items-center gap-2">
               <Wrench className="h-5 w-5 text-orange-500" />
               <span className="text-2xl font-bold">
-                ${maintenanceTotal.toLocaleString()}
+                ₹{maintenanceTotal.toLocaleString()}
               </span>
             </div>
           </CardContent>
@@ -216,7 +216,7 @@ export default function ExpensesPage() {
             <div className="flex items-center gap-2">
               <Receipt className="h-5 w-5 text-purple-500" />
               <span className="text-2xl font-bold">
-                ${miscTotal.toLocaleString()}
+                ₹{miscTotal.toLocaleString()}
               </span>
             </div>
           </CardContent>
@@ -323,7 +323,7 @@ export default function ExpensesPage() {
                         {expense.description}
                       </td>
                       <td className="px-4 py-3 font-medium">
-                        ${expense.amount.toLocaleString()}
+                        ₹{expense.amount.toLocaleString()}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {new Date(expense.date).toLocaleDateString()}
@@ -415,7 +415,7 @@ export default function ExpensesPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Amount ($)</Label>
+                <Label>Amount (₹)</Label>
                 <Input
                   type="number"
                   step="0.01"

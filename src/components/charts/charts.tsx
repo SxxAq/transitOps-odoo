@@ -114,7 +114,7 @@ export function FuelCostChart({ data }: { data: BarChartData[] }) {
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey="month" fontSize={12} tickLine={false} />
             <YAxis fontSize={12} tickLine={false} />
-            <Tooltip formatter={(value) => [`$${Number(value).toFixed(2)}`, "Cost"]} />
+            <Tooltip formatter={(value) => [`₹${Number(value).toFixed(2)}`, "Cost"]} />
             <Bar dataKey="cost" fill="#3b82f6" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
@@ -137,7 +137,7 @@ export function OperationalCostChart({ data }: { data: BarChartData[] }) {
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey="month" fontSize={12} tickLine={false} />
             <YAxis fontSize={12} tickLine={false} />
-            <Tooltip formatter={(value) => [`$${Number(value).toFixed(2)}`]} />
+            <Tooltip formatter={(value) => [`₹${Number(value).toFixed(2)}`]} />
             <Legend />
             <Bar dataKey="fuel" name="Fuel" fill="#3b82f6" stackId="a" radius={[0, 0, 0, 0]} />
             <Bar dataKey="maintenance" name="Maintenance" fill="#f97316" stackId="a" radius={[0, 0, 0, 0]} />

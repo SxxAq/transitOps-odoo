@@ -272,7 +272,7 @@ export function AnalyticsCharts({
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="month" className="text-xs" />
                 <YAxis className="text-xs" />
-                <Tooltip formatter={((value: number) => [`$${Number(value).toLocaleString()}`, "Expenses"]) as TooltipFormatter} />
+                <Tooltip formatter={((value: number) => [`₹${Number(value).toLocaleString()}`, "Expenses"]) as TooltipFormatter} />
                 <Line
                   type="monotone"
                   dataKey="total"
@@ -314,7 +314,7 @@ export function AnalyticsCharts({
                       <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={((value: number) => [`$${Number(value).toLocaleString()}`, "Amount"]) as TooltipFormatter} />
+                  <Tooltip formatter={((value: number) => [`₹${Number(value).toLocaleString()}`, "Amount"]) as TooltipFormatter} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -332,7 +332,7 @@ export function AnalyticsCharts({
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="month" className="text-xs" />
                 <YAxis className="text-xs" />
-                <Tooltip formatter={((value: number) => [`$${Number(value).toLocaleString()}`, "Fuel Cost"]) as TooltipFormatter} />
+                <Tooltip formatter={((value: number) => [`₹${Number(value).toLocaleString()}`, "Fuel Cost"]) as TooltipFormatter} />
                 <Line
                   type="monotone"
                   dataKey="total"
@@ -362,7 +362,7 @@ export function AnalyticsCharts({
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis type="number" className="text-xs" />
                   <YAxis type="category" dataKey="name" className="text-xs" width={80} />
-                  <Tooltip formatter={((value: number) => [`$${Number(value).toLocaleString()}`, "Total"]) as TooltipFormatter} />
+                  <Tooltip formatter={((value: number) => [`₹${Number(value).toLocaleString()}`, "Total"]) as TooltipFormatter} />
                   <Bar dataKey="total" fill="#8b5cf6" radius={[0, 4, 4, 0]} name="Total Spent" />
                 </BarChart>
               </ResponsiveContainer>
@@ -398,7 +398,7 @@ export function AnalyticsCharts({
           <CardHeader>
             <CardTitle className="text-base">Maintenance Cost by Vehicle</CardTitle>
             <p className="text-xs text-muted-foreground">
-              Total: ${totalMaintenanceCost.toLocaleString()}
+              Total: ₹{totalMaintenanceCost.toLocaleString()}
             </p>
           </CardHeader>
           <CardContent>
@@ -410,7 +410,7 @@ export function AnalyticsCharts({
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis type="number" className="text-xs" />
                   <YAxis type="category" dataKey="name" className="text-xs" width={80} />
-                  <Tooltip formatter={((value: number) => [`$${Number(value).toLocaleString()}`, "Cost"]) as TooltipFormatter} />
+                  <Tooltip formatter={((value: number) => [`₹${Number(value).toLocaleString()}`, "Cost"]) as TooltipFormatter} />
                   <Bar dataKey="cost" fill="#ef4444" radius={[0, 4, 4, 0]} name="Maintenance Cost" />
                 </BarChart>
               </ResponsiveContainer>
@@ -422,7 +422,7 @@ export function AnalyticsCharts({
           <CardHeader>
             <CardTitle className="text-base">Fuel Consumption by Vehicle</CardTitle>
             <p className="text-xs text-muted-foreground">
-              Total: ${totalFuelCost.toLocaleString()} |{" "}
+              Total: ₹{totalFuelCost.toLocaleString()} |{" "}
               {fuelLogs.reduce((sum, f) => sum + f.litres, 0).toLocaleString()} litres
             </p>
           </CardHeader>
@@ -438,7 +438,7 @@ export function AnalyticsCharts({
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="litres" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Litres" />
-                  <Bar dataKey="cost" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Cost ($)" />
+                  <Bar dataKey="cost" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Cost (₹)" />
                 </BarChart>
               </ResponsiveContainer>
             )}
