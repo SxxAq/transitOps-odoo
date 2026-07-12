@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/auth-context";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: "grid" },
@@ -28,15 +31,24 @@ const iconMap: Record<string, string> = {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuth();
+  const supabase = createClient();
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/auth");
+    router.refresh();
+  }
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-card">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r bg-card">
       <div className="flex h-16 items-center border-b px-6">
         <Link href="/dashboard" className="text-xl font-bold text-primary">
           TransitOps
         </Link>
       </div>
-      <nav className="space-y-1 p-4">
+      <nav className="flex-1 space-y-1 p-4">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (
@@ -66,6 +78,19 @@ export function Sidebar() {
           );
         })}
       </nav>
+      <div className="border-t p-4">
+        <div className="mb-2 text-xs text-muted-foreground truncate">
+          {user?.email}
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full"
+          onClick={handleLogout}
+        >
+          Sign Out
+        </Button>
+      </div>
     </aside>
   );
 }
