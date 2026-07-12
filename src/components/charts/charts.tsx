@@ -33,8 +33,8 @@ export function VehicleStatusChart({ data }: { data: PieChartData[] }) {
   if (total === 0) return <EmptyChart />;
 
   return (
-    <div className="rounded-xl border bg-card p-6 shadow-sm">
-      <h3 className="text-sm font-medium text-muted-foreground">
+    <div className="group rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/10 transition-all duration-300">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
         Vehicles by Status
       </h3>
       <div className="mt-4 h-[250px]">
@@ -69,8 +69,8 @@ export function TripStatusChart({ data }: { data: PieChartData[] }) {
   if (total === 0) return <EmptyChart />;
 
   return (
-    <div className="rounded-xl border bg-card p-6 shadow-sm">
-      <h3 className="text-sm font-medium text-muted-foreground">
+    <div className="group rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/10 transition-all duration-300">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
         Trips by Status
       </h3>
       <div className="mt-4 h-[250px]">
@@ -104,8 +104,8 @@ export function FuelCostChart({ data }: { data: BarChartData[] }) {
   if (data.length === 0) return <EmptyChart />;
 
   return (
-    <div className="rounded-xl border bg-card p-6 shadow-sm">
-      <h3 className="text-sm font-medium text-muted-foreground">
+    <div className="group rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/10 transition-all duration-300">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
         Monthly Fuel Cost
       </h3>
       <div className="mt-4 h-[250px]">
@@ -127,8 +127,8 @@ export function OperationalCostChart({ data }: { data: BarChartData[] }) {
   if (data.length === 0) return <EmptyChart />;
 
   return (
-    <div className="rounded-xl border bg-card p-6 shadow-sm">
-      <h3 className="text-sm font-medium text-muted-foreground">
+    <div className="group rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/10 transition-all duration-300">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
         Operational Cost Breakdown
       </h3>
       <div className="mt-4 h-[250px]">
@@ -151,8 +151,8 @@ export function OperationalCostChart({ data }: { data: BarChartData[] }) {
 
 function EmptyChart() {
   return (
-    <div className="rounded-xl border bg-card p-6 shadow-sm">
-      <h3 className="text-sm font-medium text-muted-foreground">Chart</h3>
+    <div className="rounded-2xl border border-border/40 bg-card p-6 shadow-sm">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Chart</h3>
       <div className="mt-4 flex h-[250px] items-center justify-center text-sm text-muted-foreground">
         No data available yet
       </div>

@@ -15,7 +15,7 @@ export default function AppLayout({
     <AuthProvider>
       <div className="flex min-h-screen">
         <Sidebar />
-        <main className="ml-64 flex-1 p-8">
+        <main className="ml-64 flex-1 bg-gradient-to-br from-background via-background to-primary/[0.02] p-8">
           <RBACGuard page={page}>{children}</RBACGuard>
         </main>
       </div>

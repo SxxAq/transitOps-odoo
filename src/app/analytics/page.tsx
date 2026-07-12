@@ -16,6 +16,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Button } from "@/components/ui/button";
 import {
   Fuel,
   IndianRupee,
@@ -66,13 +67,13 @@ export default function AnalyticsPage() {
             Fleet performance and financial analytics.
           </p>
         </div>
-        <button
+        <Button
           onClick={() => downloadCSV(data)}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="gap-2 rounded-xl"
         >
           <Download className="h-4 w-4" />
           Export CSV
-        </button>
+        </Button>
       </div>
 
       {/* KPI Cards */}
@@ -203,14 +204,17 @@ function AnalyticsCard({
   subtitle?: string;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-6 shadow-sm">
+    <div className="group relative overflow-hidden rounded-2xl border border-border/40 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300">
+      <div className="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-primary/5 blur-xl group-hover:bg-primary/10 transition-colors" />
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-muted-foreground">{title}</p>
-        <div className={color}>{icon}</div>
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
+        <div className={`rounded-xl p-2.5 bg-accent/40 border border-border/30 group-hover:scale-110 transition-transform duration-300 ${color}`}>
+          {icon}
+        </div>
       </div>
-      <p className="mt-2 text-2xl font-bold">{value}</p>
+      <p className="mt-4 text-3xl font-extrabold tracking-tight">{value}</p>
       {subtitle && (
-        <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
+        <p className="mt-1 text-xs text-muted-foreground font-medium">{subtitle}</p>
       )}
     </div>
   );
