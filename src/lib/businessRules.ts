@@ -1,12 +1,16 @@
-import type { Vehicle, Driver, Trip } from "@/types";
+import type { Vehicle, Driver } from "@/types";
 
 export function canDispatchVehicle(vehicle: Vehicle): boolean {
   return vehicle.status === "available";
 }
 
+export function isLicenseExpired(licenseExpiry: string): boolean {
+  return new Date(licenseExpiry) < new Date();
+}
+
 export function canAssignDriver(driver: Driver): boolean {
   if (driver.status === "suspended") return false;
-  if (new Date(driver.license_expiry) < new Date()) return false;
+  if (isLicenseExpired(driver.license_expiry)) return false;
   return driver.status === "available";
 }
 
