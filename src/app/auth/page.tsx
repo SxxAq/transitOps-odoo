@@ -43,7 +43,7 @@ export default function AuthPage() {
     setSuccess("");
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -52,6 +52,13 @@ export default function AuthPage() {
       setError(error.message);
       setLoading(false);
       return;
+    }
+
+    if (data.user) {
+      await supabase.from("profiles").upsert({
+        id: data.user.id,
+        email: data.user.email ?? email,
+      });
     }
 
     setSuccess("Account created! Check your email for confirmation, then sign in.");

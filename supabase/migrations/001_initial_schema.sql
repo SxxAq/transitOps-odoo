@@ -9,24 +9,11 @@ create table if not exists profiles (
   email text not null,
   full_name text not null default '',
   role text
-    check (role in ('fleet_manager', 'driver', 'safety_officer', 'financial_analyst')),
+    check (role is null or role in ('fleet_manager', 'driver', 'safety_officer', 'financial_analyst')),
   created_at timestamptz not null default now()
 );
 
--- Auto-create profile on signup
-create or replace function handle_new_user()
-returns trigger as $$
-begin
-  insert into profiles (id, email)
-  values (new.id, new.email);
-  return new;
-end;
-$$ language plpgsql security definer;
-
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function handle_new_user();
+-- Profiles are created by the app after signup (no trigger needed)
 
 -- ============================================
 -- 2. VEHICLES
@@ -136,6 +123,12 @@ alter table expenses enable row level security;
 do $$ begin
   create policy "Authenticated users can read profiles"
     on profiles for select to authenticated using (true);
+exception when duplicate_object then null;
+end $$;
+
+do $$ begin
+  create policy "Users can insert own profile"
+    on profiles for insert to authenticated with check (auth.uid() = id);
 exception when duplicate_object then null;
 end $$;
 

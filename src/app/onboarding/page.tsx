@@ -29,8 +29,11 @@ export default function OnboardingPage() {
 
     const { error } = await supabase
       .from("profiles")
-      .update({ role: selected })
-      .eq("id", user.id);
+      .upsert({
+        id: user.id,
+        email: user.email ?? "",
+        role: selected,
+      });
 
     if (error) {
       setError(error.message);
