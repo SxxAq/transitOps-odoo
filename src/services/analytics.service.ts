@@ -1,7 +1,27 @@
 import { createClient } from "@/lib/supabase/client";
-import type { Vehicle, Trip, FuelLog, MaintenanceRecord, Expense } from "@/types";
+import type { Vehicle, Driver, Trip, FuelLog, MaintenanceRecord, Expense } from "@/types";
+
+export interface VehicleBreakdown {
+  vehicleId: string;
+  regNumber: string;
+  model: string;
+  fuelCost: number;
+  maintenanceCost: number;
+  expenseCost: number;
+  totalCost: number;
+  trips: number;
+  distance: number;
+  fuelUsed: number;
+  efficiency: number;
+}
 
 export interface AnalyticsData {
+  vehicles: Vehicle[];
+  drivers: Driver[];
+  trips: Trip[];
+  fuelLogs: FuelLog[];
+  maintenance: MaintenanceRecord[];
+  expenses: Expense[];
   fuelEfficiency: number;
   operationalCost: number;
   fleetUtilization: number;
@@ -12,26 +32,15 @@ export interface AnalyticsData {
   totalRevenue: number;
   totalDistance: number;
   totalFuelLitres: number;
-  vehicleBreakdown: {
-    vehicleId: string;
-    regNumber: string;
-    model: string;
-    fuelCost: number;
-    maintenanceCost: number;
-    expenseCost: number;
-    totalCost: number;
-    trips: number;
-    distance: number;
-    fuelUsed: number;
-    efficiency: number;
-  }[];
+  vehicleBreakdown: VehicleBreakdown[];
 }
 
 export async function getAnalyticsData(): Promise<AnalyticsData> {
   const supabase = createClient();
 
-  const [vehiclesRes, tripsRes, fuelRes, maintRes, expRes] = await Promise.all([
+  const [vehiclesRes, driversRes, tripsRes, fuelRes, maintRes, expRes] = await Promise.all([
     supabase.from("vehicles").select("*"),
+    supabase.from("drivers").select("*"),
     supabase.from("trips").select("*"),
     supabase.from("fuel_logs").select("*"),
     supabase.from("maintenance").select("*"),
@@ -39,6 +48,7 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
   ]);
 
   const vehicles: Vehicle[] = (vehiclesRes.data as Vehicle[]) ?? [];
+  const drivers: Driver[] = (driversRes.data as Driver[]) ?? [];
   const trips: Trip[] = (tripsRes.data as Trip[]) ?? [];
   const fuelLogs: FuelLog[] = (fuelRes.data as FuelLog[]) ?? [];
   const maintenance: MaintenanceRecord[] = (maintRes.data as MaintenanceRecord[]) ?? [];
@@ -107,6 +117,12 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
     .sort((a, b) => b.totalCost - a.totalCost);
 
   return {
+    vehicles,
+    drivers,
+    trips,
+    fuelLogs,
+    maintenance,
+    expenses,
     fuelEfficiency,
     operationalCost,
     fleetUtilization,
@@ -121,51 +137,76 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
   };
 }
 
-export function generateCSV(data: AnalyticsData): string {
-  const rows = [
-    ["Metric", "Value"],
-    ["Total Fuel Cost", `₹${data.totalFuelCost.toFixed(2)}`],
-    ["Total Maintenance Cost", `₹${data.totalMaintenanceCost.toFixed(2)}`],
-    ["Total Expenses", `₹${data.totalExpenseCost.toFixed(2)}`],
-    ["Operational Cost", `₹${data.operationalCost.toFixed(2)}`],
-    ["Fuel Efficiency (km/L)", data.fuelEfficiency.toString()],
-    ["Fleet Utilization", `${data.fleetUtilization}%`],
-    ["Vehicle ROI", `${data.vehicleROI}%`],
-    ["Total Distance (km)", data.totalDistance.toString()],
-    ["Total Fuel (L)", data.totalFuelLitres.toString()],
-    [],
-    ["Vehicle Breakdown"],
-    [
-      "Registration",
-      "Model",
-      "Fuel Cost",
-      "Maintenance Cost",
-      "Expense Cost",
-      "Total Cost",
-      "Trips",
-      "Distance (km)",
-      "Fuel (L)",
-      "Efficiency (km/L)",
-    ],
-    ...data.vehicleBreakdown.map((v) => [
-      v.regNumber,
-      v.model,
-      `₹${v.fuelCost.toFixed(2)}`,
-      `₹${v.maintenanceCost.toFixed(2)}`,
-      `₹${v.expenseCost.toFixed(2)}`,
-      `₹${v.totalCost.toFixed(2)}`,
-      v.trips.toString(),
-      v.distance.toString(),
-      v.fuelUsed.toString(),
-      v.efficiency.toString(),
-    ]),
-  ];
+export function downloadAllCSV(data: AnalyticsData) {
+  const lines: string[] = [];
 
-  return rows.map((row) => row.join(",")).join("\n");
-}
+  lines.push("TransitOps Analytics Report");
+  lines.push(`Generated,${new Date().toLocaleDateString()}`);
+  lines.push("");
 
-export function downloadCSV(data: AnalyticsData) {
-  const csv = generateCSV(data);
+  lines.push("=== KPI Summary ===");
+  lines.push("Metric,Value");
+  lines.push(`Total Vehicles,${data.vehicles.length}`);
+  lines.push(`Total Drivers,${data.drivers.length}`);
+  lines.push(`Total Trips,${data.trips.length}`);
+  lines.push(`Completed Trips,${data.trips.filter((t) => t.status === "completed").length}`);
+  lines.push(`Fuel Efficiency,${data.fuelEfficiency} km/L`);
+  lines.push(`Fleet Utilization,${data.fleetUtilization}%`);
+  lines.push(`Operational Cost,₹${data.operationalCost.toFixed(2)}`);
+  lines.push(`Vehicle ROI,${data.vehicleROI}%`);
+  lines.push(`Total Revenue (est),"₹${data.totalRevenue.toLocaleString()}"`);
+  lines.push("");
+
+  lines.push("=== Vehicle Breakdown ===");
+  lines.push("Registration,Model,Fuel Cost,Maintenance Cost,Expense Cost,Total Cost,Trips,Distance (km),Fuel (L),Efficiency (km/L)");
+  data.vehicleBreakdown.forEach((v) => {
+    lines.push(
+      `${v.regNumber},${v.model},₹${v.fuelCost.toFixed(2)},₹${v.maintenanceCost.toFixed(2)},₹${v.expenseCost.toFixed(2)},₹${v.totalCost.toFixed(2)},${v.trips},${v.distance},${v.fuelUsed},${v.efficiency}`
+    );
+  });
+  lines.push("");
+
+  lines.push("=== Driver Performance ===");
+  lines.push("Name,License,Category,Score,Status,License Expiry");
+  data.drivers.forEach((d) => {
+    lines.push(
+      `${d.name},${d.license_number},${d.license_category},${d.safety_score},${d.status},${d.license_expiry}`
+    );
+  });
+  lines.push("");
+
+  lines.push("=== Trip Log ===");
+  lines.push("Source,Destination,Status,Distance (km),Cargo (kg),Dispatched,Completed");
+  data.trips.forEach((t) => {
+    lines.push(
+      `${t.source},${t.destination},${t.status},${t.planned_distance},${t.cargo_weight},${t.dispatched_at ?? ""},${t.completed_at ?? ""}`
+    );
+  });
+  lines.push("");
+
+  lines.push("=== Expenses ===");
+  lines.push("Type,Amount,Description,Date,Vehicle ID");
+  data.expenses.forEach((e) => {
+    lines.push(`${e.type},₹${e.amount.toFixed(2)},${e.description},${e.date},${e.vehicle_id}`);
+  });
+  lines.push("");
+
+  lines.push("=== Fuel Logs ===");
+  lines.push("Vehicle ID,Litres,Cost,Date");
+  data.fuelLogs.forEach((f) => {
+    lines.push(`${f.vehicle_id},${f.litres},₹${f.cost.toFixed(2)},${f.date}`);
+  });
+  lines.push("");
+
+  lines.push("=== Maintenance Records ===");
+  lines.push("Vehicle ID,Title,Description,Cost,Status");
+  data.maintenance.forEach((m) => {
+    lines.push(
+      `${m.vehicle_id},${m.title},${m.description},₹${m.cost.toFixed(2)},${m.status}`
+    );
+  });
+
+  const csv = lines.join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

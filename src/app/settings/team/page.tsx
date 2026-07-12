@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/contexts/auth-context";
 import { roleConfig, type UserRole } from "@/lib/rbac";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -39,18 +38,17 @@ export default function TeamPage() {
   const userRole = profile?.role as UserRole | undefined;
 
   useEffect(() => {
+    async function fetchUsers() {
+      setLoading(true);
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: true });
+      if (data) setUsers(data as Profile[]);
+      setLoading(false);
+    }
     fetchUsers();
-  }, []);
-
-  async function fetchUsers() {
-    setLoading(true);
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .order("created_at", { ascending: true });
-    if (data) setUsers(data as Profile[]);
-    setLoading(false);
-  }
+  }, [supabase]);
 
   async function updateRole(userId: string, newRole: UserRole) {
     const { error } = await supabase
